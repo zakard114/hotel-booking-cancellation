@@ -1,0 +1,14 @@
+# Render Blueprint — Hotel Booking Cancellation API (bonus cloud)
+# Docs: https://render.com/docs/blueprint-spec
+# Do not put secrets here. Fill real public URL in README only after a live deploy.
+
+services:
+  - type: web
+    name: hotel-cancel-api
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    # Render sets PORT; predict.py should read os.environ["PORT"] (see Phase 8 guide).
+    # No healthCheckPath: app only exposes POST /predict (GET / would 404).

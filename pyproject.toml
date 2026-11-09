@@ -1,0 +1,10 @@
+[project]
+name = "hotel-booking-cancellation"
+version = "0.1.0"
+description = "ML Zoomcamp 2026 midterm — hotel booking cancellation classifier"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+dev = []
