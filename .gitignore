@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual envs
+.venv/
+venv/
+env/
+
+# Secrets / env
+.env
+*.secrets.toml
+
+# Data (large CSVs stay local; keep data/README.md)
+data/*.csv
+data/*.zip
+data/*.parquet
+!data/README.md
+
+# Models / artifacts
+models/*.bin
+models/*.pkl
+models/*.joblib
+!models/.gitkeep
+!models/model.bin
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE / Cursor caches
+.cursor/history/
+.cursor/temp/
+.idea/
+.vscode/
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Docker / local
+*.log
