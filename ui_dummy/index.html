@@ -3,303 +3,24 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>HoldRisk · cancel risk (DRAFT)</title>
+  <title>HoldRisk · hotel cancellation risk (DRAFT)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Serif+4:opsz,ital,wght@8..60,0,400;8..60,0,600;8..60,1,400&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --ink: #10241f;
-      --ink-soft: #2a4a42;
-      --mist: #e8f1ec;
-      --paper: rgba(244, 248, 245, 0.78);
-      --line: rgba(16, 36, 31, 0.14);
-      --accent: #c45c26;
-      --accent-deep: #9a3f14;
-      --calm: #1f6b5a;
-      --warn: #b42318;
-      --ok: #0f6b4c;
-      --glow: rgba(196, 92, 38, 0.22);
-    }
-
-    * { box-sizing: border-box; }
-    html, body { margin: 0; min-height: 100%; }
-    body {
-      color: var(--ink);
-      font-family: "Source Serif 4", Georgia, serif;
-      background:
-        radial-gradient(1200px 640px at 12% -10%, rgba(255, 214, 170, 0.45), transparent 55%),
-        radial-gradient(900px 520px at 88% 8%, rgba(47, 120, 104, 0.28), transparent 50%),
-        linear-gradient(165deg, #d7e8e0 0%, #b9cfc6 42%, #8fb0a4 100%);
-      overflow-x: clip;
-    }
-
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background-image:
-        linear-gradient(rgba(16, 36, 31, 0.035) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(16, 36, 31, 0.035) 1px, transparent 1px);
-      background-size: 48px 48px;
-      mask-image: radial-gradient(ellipse at 50% 30%, black 20%, transparent 75%);
-      animation: drift 18s ease-in-out infinite alternate;
-    }
-
-    @keyframes drift {
-      from { transform: translate3d(0, 0, 0); opacity: 0.55; }
-      to { transform: translate3d(-12px, 8px, 0); opacity: 0.85; }
-    }
-
-    @keyframes rise {
-      from { opacity: 0; transform: translateY(18px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes pulse-soft {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(196, 92, 38, 0); }
-      50% { box-shadow: 0 0 0 10px rgba(196, 92, 38, 0.08); }
-    }
-
-    .draft {
-      position: fixed;
-      top: 14px;
-      left: 16px;
-      z-index: 4;
-      font-family: "Bricolage Grotesque", sans-serif;
-      font-size: 11px;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--ink-soft);
-      background: rgba(244, 248, 245, 0.7);
-      border: 1px solid var(--line);
-      padding: 7px 11px;
-      backdrop-filter: blur(6px);
-    }
-
-    .ops-mini {
-      position: fixed;
-      top: 14px;
-      right: 16px;
-      z-index: 4;
-      font-family: "Bricolage Grotesque", sans-serif;
-      font-size: 11px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--ink-soft);
-      background: transparent;
-      border: 0;
-      padding: 8px 6px;
-      cursor: pointer;
-    }
-    .ops-mini:hover { color: var(--accent-deep); }
-
-    .shell {
-      min-height: 100vh;
-      display: grid;
-      align-items: center;
-      padding: 72px 24px 48px;
-    }
-
-    .stage {
-      width: min(920px, 100%);
-      margin: 0 auto;
-      animation: rise 0.7s ease-out both;
-    }
-
-    .brand {
-      font-family: "Bricolage Grotesque", sans-serif;
-      font-weight: 700;
-      font-size: clamp(3.1rem, 8vw, 5.4rem);
-      line-height: 0.92;
-      letter-spacing: -0.04em;
-      margin: 0 0 14px;
-      color: var(--ink);
-    }
-
-    .lede {
-      max-width: 34rem;
-      margin: 0 0 36px;
-      font-size: clamp(1.05rem, 2.2vw, 1.28rem);
-      line-height: 1.45;
-      color: var(--ink-soft);
-    }
-
-    .workspace {
-      display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
-      gap: 28px 40px;
-      align-items: end;
-    }
-
-    .fields {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px 16px;
-    }
-
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-    }
-    .field.span-2 { grid-column: 1 / -1; }
-
-    label {
-      font-family: "Bricolage Grotesque", sans-serif;
-      font-size: 12px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--ink-soft);
-    }
-
-    input, select {
-      width: 100%;
-      appearance: none;
-      border: 1px solid var(--line);
-      background: var(--paper);
-      color: var(--ink);
-      border-radius: 2px;
-      padding: 14px 14px;
-      font: inherit;
-      font-size: 1.05rem;
-      backdrop-filter: blur(4px);
-      transition: border-color 0.2s ease, background 0.2s ease;
-    }
-    input:focus, select:focus {
-      outline: none;
-      border-color: rgba(196, 92, 38, 0.65);
-      background: rgba(255, 252, 248, 0.92);
-    }
-
-    .cta-row {
-      grid-column: 1 / -1;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-top: 6px;
-    }
-
-    .predict {
-      font-family: "Bricolage Grotesque", sans-serif;
-      font-size: 15px;
-      letter-spacing: 0.04em;
-      border: 0;
-      background: var(--accent);
-      color: #fff8f2;
-      padding: 15px 22px;
-      cursor: pointer;
-      border-radius: 2px;
-      transition: background 0.2s ease, transform 0.15s ease;
-    }
-    .predict:hover { background: var(--accent-deep); }
-    .predict:active { transform: translateY(1px); }
-    .predict.busy { animation: pulse-soft 1.1s ease-in-out infinite; }
-
-    .reset {
-      font-family: "Bricolage Grotesque", sans-serif;
-      font-size: 13px;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      background: transparent;
-      border: 0;
-      color: var(--ink-soft);
-      cursor: pointer;
-      padding: 10px 6px;
-    }
-    .reset:hover { color: var(--ink); }
-
-    .result {
-      min-height: 220px;
-      padding: 8px 0 0;
-      border-top: 1px solid var(--line);
-      opacity: 0;
-      transform: translateY(10px);
-      transition: opacity 0.35s ease, transform 0.35s ease;
-    }
-    .result.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .result-kicker {
-      font-family: "Bricolage Grotesque", sans-serif;
-      font-size: 12px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--ink-soft);
-      margin: 0 0 10px;
-    }
-
-    .prob {
-      font-family: "Bricolage Grotesque", sans-serif;
-      font-weight: 700;
-      font-size: clamp(2.8rem, 6vw, 4.2rem);
-      letter-spacing: -0.04em;
-      line-height: 1;
-      margin: 0 0 10px;
-      color: var(--ink);
-    }
-    .prob.high { color: var(--warn); }
-    .prob.low { color: var(--ok); }
-
-    .verdict {
-      margin: 0;
-      font-size: 1.12rem;
-      line-height: 1.4;
-      color: var(--ink-soft);
-      max-width: 18rem;
-    }
-    .verdict strong {
-      color: var(--ink);
-      font-weight: 600;
-    }
-
-    .hint {
-      margin: 18px 0 0;
-      font-size: 0.92rem;
-      color: rgba(16, 36, 31, 0.55);
-    }
-
-    .toast {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: rgba(16, 36, 31, 0.92);
-      color: var(--mist);
-      font-family: "Bricolage Grotesque", sans-serif;
-      font-size: 13px;
-      letter-spacing: 0.04em;
-      padding: 12px 14px;
-      border-radius: 2px;
-      opacity: 0;
-      transform: translateY(8px);
-      transition: opacity 0.25s ease, transform 0.25s ease;
-      pointer-events: none;
-    }
-    .toast.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    @media (max-width: 780px) {
-      .shell { padding: 84px 16px 40px; align-items: start; }
-      .workspace { grid-template-columns: 1fr; gap: 28px; }
-      .fields { grid-template-columns: 1fr; }
-      .field.span-2 { grid-column: auto; }
-      .result { border-top: 0; border-left: 0; min-height: 0; padding-top: 0; }
-    }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
-  <div class="draft">DRAFT · 더미 초안 · API 미연결</div>
-  <button class="ops-mini" id="ops" type="button" title="Ops placeholder">Ops</button>
+  <div class="chrome">
+    <div class="draft">DRAFT · 더미 · API 미연결</div>
+    <button class="ops" id="ops" type="button" title="Ops placeholder">Ops</button>
+  </div>
 
   <main class="shell">
     <div class="stage">
-      <h1 class="brand">HoldRisk</h1>
-      <p class="lede">예약이 취소될지 확률로 먼저 본다. 리드타임·호텔·보증금·채널만 넣고 점수 한 번.</p>
+      <div class="brand-block">
+        <h1 class="brand">Hold<span class="brand-accent">Risk</span></h1>
+        <p class="lede">예약이 취소될지, 확률 한 장으로 먼저 본다. 리드타임·호텔·보증금·채널만 넣고 점수.</p>
+      </div>
 
       <div class="workspace">
         <form id="form" class="fields" autocomplete="off">
@@ -348,78 +69,17 @@
         </form>
 
         <aside class="result" id="result" aria-live="polite">
-          <p class="result-kicker">Result · mock</p>
+          <p class="result-kicker">Cancel probability · mock</p>
           <p class="prob" id="prob">—</p>
+          <div class="meter" aria-hidden="true"><span id="meter-fill"></span></div>
           <p class="verdict" id="verdict">값을 넣고 예측을 누르면 취소 확률과 <strong>is_canceled</strong>가 여기에 뜹니다.</p>
-          <p class="hint">더미 점수입니다. 학습된 모델·Flask와는 아직 연결되지 않았습니다.</p>
+          <p class="hint">더미 점수입니다. 학습된 모델·API와는 아직 연결되지 않았습니다.</p>
         </aside>
       </div>
     </div>
   </main>
 
   <div class="toast" id="toast" role="status">Ops는 나중에 — 지금은 자리만</div>
-
-  <script>
-    const form = document.getElementById("form");
-    const result = document.getElementById("result");
-    const probEl = document.getElementById("prob");
-    const verdictEl = document.getElementById("verdict");
-    const predictBtn = document.getElementById("predict");
-    const toast = document.getElementById("toast");
-
-    function mockProbability(values) {
-      let p = 0.14;
-      p += Math.min(Number(values.lead_time) || 0, 365) / 900;
-      if (values.hotel === "City Hotel") p += 0.08;
-      if (values.deposit === "Non Refund") p -= 0.18;
-      if (values.deposit === "No Deposit") p += 0.06;
-      if (values.segment === "Groups") p += 0.14;
-      if (values.segment === "Online TA") p += 0.05;
-      if (values.segment === "Direct") p -= 0.04;
-      if (Number(values.adults) >= 3) p += 0.03;
-      if (Number(values.adr) > 150) p += 0.04;
-      return Math.max(0.02, Math.min(0.97, p));
-    }
-
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const data = Object.fromEntries(new FormData(form).entries());
-      predictBtn.classList.add("busy");
-      predictBtn.disabled = true;
-
-      window.setTimeout(() => {
-        const p = mockProbability(data);
-        const pct = (p * 100).toFixed(1) + "%";
-        const canceled = p >= 0.5;
-
-        probEl.textContent = pct;
-        probEl.className = "prob " + (canceled ? "high" : "low");
-        verdictEl.innerHTML = canceled
-          ? `예상: <strong>is_canceled = 1</strong> · 취소 위험이 높습니다.`
-          : `예상: <strong>is_canceled = 0</strong> · 유지 가능성이 더 큽니다.`;
-
-        result.classList.add("show");
-        predictBtn.classList.remove("busy");
-        predictBtn.disabled = false;
-      }, 280);
-    });
-
-    document.getElementById("reset").addEventListener("click", () => {
-      form.reset();
-      result.classList.remove("show");
-      probEl.textContent = "—";
-      probEl.className = "prob";
-      verdictEl.innerHTML =
-        '값을 넣고 예측을 누르면 취소 확률과 <strong>is_canceled</strong>가 여기에 뜹니다.';
-    });
-
-    document.getElementById("ops").addEventListener("click", () => {
-      toast.classList.add("show");
-      window.setTimeout(() => toast.classList.remove("show"), 1800);
-    });
-
-    // First paint: idle result visible so the composition is complete for inspection
-    result.classList.add("show");
-  </script>
+  <script src="./app.js"></script>
 </body>
 </html>
