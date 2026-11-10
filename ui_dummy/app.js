@@ -21,7 +21,6 @@
     log: [],
   };
 
-  // Defaults fill features the desk form does not edit (same shape as train DictVectorizer rows).
   function buildPayload(formValues) {
     return {
       hotel: formValues.hotel,
@@ -53,6 +52,7 @@
       adr: Number(formValues.adr),
       required_car_parking_spaces: 0,
       total_of_special_requests: 1,
+      decision_threshold: state.threshold,
     };
   }
 
@@ -125,7 +125,34 @@
       .join("");
   }
 
-  function refreshBoard() {
+  async function refreshBoard() {
+    document.getElementById("m-thr").textContent = state.threshold.toFixed(2);
+    try {
+      const res = await fetch("/ops/board");
+      if (!res.ok) throw new Error("board " + res.status);
+      const board = await res.json();
+      document.getElementById("m-count").textContent = String(board.predict_count ?? 0);
+      document.getElementById("m-high").textContent = String(board.flagged_count ?? 0);
+      document.getElementById("m-avg").textContent =
+        board.avg_latency_ms != null ? board.avg_latency_ms + " ms" : "—";
+      const audit = board.audit || [];
+      boardBody.innerHTML = audit.length
+        ? audit
+            .map((r) => {
+              const ex = r.extra || {};
+              const flagged = ex.is_canceled === true;
+              const p =
+                ex.cancel_probability != null
+                  ? (Number(ex.cancel_probability) * 100).toFixed(1) + "%"
+                  : "—";
+              return `<tr class="${flagged ? "risk" : ""}"><td>${r.time}</td><td>${p}</td><td>${flagged ? "1" : ex.is_canceled === false ? "0" : "—"}</td><td>${ex.hotel ?? "—"}</td><td>${ex.lead_time ?? "—"}</td><td><code>${r.path} · ${r.status} · ${r.latency_ms}ms</code></td></tr>`;
+            })
+            .join("")
+        : '<tr><td colspan="6">No server audit rows yet. Run a predict.</td></tr>';
+      return;
+    } catch (_) {
+      // Fall back to session log if board endpoint is cold/unavailable.
+    }
     const n = state.log.length;
     const high = state.log.filter((r) => r.canceled).length;
     const avg = n
@@ -134,7 +161,6 @@
     document.getElementById("m-count").textContent = String(n);
     document.getElementById("m-high").textContent = String(high);
     document.getElementById("m-avg").textContent = avg;
-    document.getElementById("m-thr").textContent = state.threshold.toFixed(2);
     boardBody.innerHTML = state.log.length
       ? state.log
           .map(
@@ -151,8 +177,7 @@
     refreshBoard();
   }
 
-  function recordPredict(data, p, source) {
-    const canceled = p >= state.threshold;
+  function recordPredict(data, p, canceled, source) {
     const row = {
       p,
       canceled,
@@ -174,7 +199,7 @@
       hintEl.textContent =
         source === "api"
           ? "Live model via POST /predict. Flag uses Ops decision threshold."
-          : "Mock fallback (API unreachable). Flag uses Ops decision threshold.";
+          : "Request failed — check that the Flask service is up.";
     }
     refreshOps();
   }
@@ -186,11 +211,14 @@
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
+    const json = await res.json().catch(() => ({}));
     if (!res.ok) {
-      throw new Error("HTTP " + res.status);
+      throw new Error(json.error || "HTTP " + res.status);
     }
-    const json = await res.json();
-    return Number(json.cancel_probability);
+    return {
+      p: Number(json.cancel_probability),
+      canceled: Boolean(json.is_canceled),
+    };
   }
 
   form.addEventListener("submit", async (e) => {
@@ -201,23 +229,12 @@
     openOps.disabled = true;
 
     try {
-      const p = await predictViaApi(data);
-      recordPredict(data, p, "api");
+      const { p, canceled } = await predictViaApi(data);
+      recordPredict(data, p, canceled, "api");
     } catch (err) {
-      console.warn("API predict failed, using mock:", err);
-      // Offline / file:// fallback so the draft still demos.
-      let p = 0.14;
-      p += Math.min(Number(data.lead_time) || 0, 365) / 900;
-      if (data.hotel === "City Hotel") p += 0.08;
-      if (data.deposit === "Non Refund") p -= 0.18;
-      if (data.deposit === "No Deposit") p += 0.06;
-      if (data.segment === "Groups") p += 0.14;
-      if (data.segment === "Online TA") p += 0.05;
-      if (data.segment === "Direct") p -= 0.04;
-      if (Number(data.adults) >= 3) p += 0.03;
-      if (Number(data.adr) > 150) p += 0.04;
-      p = Math.max(0.02, Math.min(0.97, p));
-      recordPredict(data, p, "mock");
+      console.error(err);
+      verdictEl.innerHTML = `Predict failed: <strong>${String(err.message || err)}</strong>`;
+      if (hintEl) hintEl.textContent = "Could not reach POST /predict.";
     }
 
     result.classList.add("show");
@@ -241,19 +258,9 @@
       return;
     }
     state.threshold = v;
-    thresholdMsg.textContent = "Threshold saved for this session.";
+    thresholdMsg.textContent = "Threshold saved — next predict uses this cut.";
     thresholdMsg.className = "form-msg saved";
-    if (state.latest) {
-      state.latest.canceled = state.latest.p >= state.threshold;
-      state.log = state.log.map((r) => ({
-        ...r,
-        canceled: r.p >= state.threshold,
-      }));
-      applyVerdict(state.latest.p, state.latest.canceled);
-      refreshOps();
-    } else {
-      document.getElementById("m-thr").textContent = state.threshold.toFixed(2);
-    }
+    document.getElementById("m-thr").textContent = state.threshold.toFixed(2);
   });
 
   function showOps() {
@@ -286,6 +293,7 @@
       document.querySelectorAll("[data-panel]").forEach((panel) => {
         panel.hidden = panel.getAttribute("data-panel") !== name;
       });
+      if (name === "grafana") refreshBoard();
     });
   });
 

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>HoldRisk · hotel cancellation risk (DRAFT)</title>
+  <title>HoldRisk · hotel cancellation risk</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600;6..72,700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -11,7 +11,7 @@
 </head>
 <body>
   <div class="chrome">
-    <div class="draft">DRAFT · Flask wired · POST /predict</div>
+    <div class="draft">HoldRisk · live model</div>
     <button class="ops-corner" id="open-ops" type="button">Ops</button>
   </div>
 
@@ -127,7 +127,7 @@
 
         <div data-panel="api" hidden>
           <div class="eyebrow">API</div>
-          <p class="note">Live service routes once wired. Ops board later reads the same host.</p>
+          <p class="note">Same-origin Flask routes on this host.</p>
           <table class="api-table">
             <thead>
               <tr><th>Method</th><th>Path</th><th>Role</th></tr>
@@ -136,7 +136,7 @@
               <tr><td>GET</td><td><code>/</code></td><td>Desk UI</td></tr>
               <tr><td>GET</td><td><code>/health</code></td><td>Liveness</td></tr>
               <tr><td>POST</td><td><code>/predict</code></td><td>Cancel probability JSON</td></tr>
-              <tr><td>GET</td><td><code>/ops/board</code></td><td>Ops metrics (planned)</td></tr>
+              <tr><td>GET</td><td><code>/ops/board</code></td><td>Ops Grafana board</td></tr>
             </tbody>
           </table>
           <pre class="sample">POST /predict
@@ -156,7 +156,7 @@ Content-Type: application/json
 
         <div data-panel="grafana" hidden>
           <div class="eyebrow">Grafana</div>
-          <p class="note">In-app ops board for this desk (mock). Request counts and the audit table live here — same role as Signet’s Grafana tab. A full Grafana server stays optional/local later; it is not required for this console.</p>
+          <p class="note">In-app Grafana board from <code>GET /ops/board</code> on this host. Counts and audit rows update after each predict. A separate Grafana server is optional and not required.</p>
           <div class="metrics" id="board-metrics">
             <div class="metric"><span class="m-label">Predicts</span><strong id="m-count">0</strong></div>
             <div class="metric"><span class="m-label">Flagged high</span><strong id="m-high">0</strong></div>

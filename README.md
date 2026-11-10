@@ -53,7 +53,8 @@ docker build -t hotel-cancel . ; docker run --rm -p 9696:9696 hotel-cancel
 **Live URL:** https://hotel-cancel-api.onrender.com  
 (Free tier may cold-start 30–60s+ on the first request.)
 
-Health check: `GET /health` · Predict: `POST /predict`
+**HoldRisk desk UI:** open the Live URL `/` (Ops at top-right → Inspector / Log / API / Grafana).  
+Health: `GET /health` · Predict: `POST /predict` · Ops board: `GET /ops/board`
 
 ```powershell
 $base = "https://hotel-cancel-api.onrender.com"
@@ -91,7 +92,8 @@ Deploy notes: [`deploy/README.md`](deploy/README.md).
 data/           # download instructions; CSV usually gitignored
 notebooks/      # EDA + model selection notebook
 src/train.py    # final training script → models/model.bin
-src/predict.py  # Flask POST /predict on :9696
+src/predict.py  # Flask desk UI + POST /predict + GET /ops/board
+ui_dummy/       # HoldRisk front-end (served at / and /ui/*)
 Dockerfile      # container for the Flask predict API
 _planning/      # roadmap, phase packs, Gemini paste files
 ```
