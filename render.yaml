@@ -8,7 +8,9 @@ services:
     runtime: docker
     plan: free
     region: oregon
+    branch: main
     dockerfilePath: ./Dockerfile
     dockerContext: .
-    # Render sets PORT; predict.py should read os.environ["PORT"] (see Phase 8 guide).
-    # No healthCheckPath: app only exposes POST /predict (GET / would 404).
+    healthCheckPath: /health
+    # Render sets PORT; predict.py reads os.environ.get("PORT", "9696").
+    # GET /health returns 200; POST /predict is the real API (GET / is still 404).

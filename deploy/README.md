@@ -20,7 +20,7 @@
 2. **New +** → **Blueprint**  
 3. Connect GitHub → 레포 **`zakard114/hotel-booking-cancellation`**  
 4. `render.yaml` 확인 · 브랜치 **`main`** → **Apply**  
-5. 값이 맞는지 확인: name `hotel-cancel-api`, oregon, docker, free, `./Dockerfile`, context `.`, health check **없음**  
+5. 값이 맞는지 확인: name `hotel-cancel-api`, oregon, docker, free, `./Dockerfile`, context `.`, health check **`/health`**  
 6. **성공:** 초록 **Live** + 헤더 **`.onrender.com`** URL 복사  
 7. Free 콜드 스타트 30–60초+ 가능  
 8. PowerShell 스모크 (`YOUR-SERVICE`만 교체) — body는 `phase_8_final_guide.md`와 동일:
@@ -39,12 +39,14 @@ Invoke-RestMethod -Method Post -Uri "$base/predict" `
 |------|------|
 | `COPY` / `models` / `No such file` | 원격에 모델 없음 |
 | `FileNotFoundError` … `model.bin` | 기동 시 모델 경로 실패 |
+| `libgomp` / `ImportError` (xgboost) | slim에 OpenMP 누락 — Dockerfile `libgomp1` 확인 |
+| `Health check` / `failed to become healthy` | `/health` 미응답·PORT 미바인딩 |
 | pip / dependency ERROR | `requirements.txt` 설치 실패 |
-| Live인데 `/` 만 404 | `POST /predict`만 있음 |
+| Live인데 `/` 만 404 | 정상 — `GET /health` 또는 `POST /predict` |
 
 ## 대안 (수동)
 
-**New +** → **Web Service** → Docker → Name `hotel-cancel-api`, Branch `main`, Dockerfile `./Dockerfile`, Context `.`, Free, Health check 비움 → **Create Web Service**.
+**New +** → **Web Service** → Docker → Name `hotel-cancel-api`, Branch `main`, Dockerfile `./Dockerfile`, Context `.`, Free, Health check `/health` → **Create Web Service**.
 
 ## 제출 (선택)
 

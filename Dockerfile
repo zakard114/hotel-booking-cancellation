@@ -8,6 +8,11 @@ WORKDIR /app
 # 목적(용도): COPY·RUN·CMD가 같은 경로 기준으로 실행되게 한다.
 # 이 시점: 베이스 직후, 파일을 넣기 전.
 
+# slim 이미지에 XGBoost OpenMP 런타임(libgomp)이 없을 때 ImportError를 막는다.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY requirements.txt .
 # COPY requirements.txt: 호스트의 pin 목록을 이미지 /app 으로 복사한다.
 # 목적(용도): 나중에 pip가 설치할 패키지 목록을 이미지에 넣기 위함.

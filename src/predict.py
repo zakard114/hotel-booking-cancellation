@@ -56,6 +56,12 @@ def predict_single(customer_data):
 app = Flask("hotel-cancellation")
 
 
+@app.route("/health", methods=["GET"])
+def health():
+    # Render Blueprint healthCheckPath용 — 모델 로드 후 프로세스만 살아 있으면 200.
+    return jsonify({"status": "ok"}), 200
+
+
 @app.route("/predict", methods=["POST"])
 def predict():
     customer = request.get_json()
