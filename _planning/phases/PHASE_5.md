@@ -1,22 +1,47 @@
 # Phase 5 — Dependency and environment (6/9)
 
-### 목표
+**Done** (2026-11-08).
 
-실행에 필요한 패키지를 `requirements.txt`(또는 `pyproject.toml`)에 **버전 고정**하고, README에 E: + venv 설치·활성화 절차를 문서화한다.
+## Table of contents
 
-### 산출물
+- [Goal](#goal)
+- [Output](#output)
+- [Out of scope](#out-of-scope)
+- [Success](#success)
 
-- pin된 deps 파일
-- README How to run의 deps 구간이 따라 할 수 있게 채워짐
+---
 
-### 하지 말 것
+## Goal
 
-- Dockerfile 작성·`docker build` (그건 **7/9**)
-- 클라우드 (9/9)
-- C:에 pip/uv 캐시·venv
+Pin the packages the project needs and document how to create the environment on E:.
 
-### 성공 기준
+[↑ Contents](#table-of-contents)
 
-- [x] deps 파일에 train/predict에 쓰는 패키지 버전이 박혀 있음
-- [x] README에 `use_e_drive` → venv → `pip install -r requirements.txt`(또는 동등) 절차
-- [x] 같은 환경에서 `python src/predict.py` 기동이 문서와 맞음
+---
+
+## Output
+
+- `requirements.txt` with pinned versions (install source of truth)
+- README How to run: `use_e_drive` → venv → `pip install -r requirements.txt`
+
+[↑ Contents](#table-of-contents)
+
+---
+
+## Out of scope
+
+- Writing or building the Dockerfile (gate 7/9)
+- Cloud (gate 9/9)
+- pip or venv caches under `C:\Users\...`
+
+[↑ Contents](#table-of-contents)
+
+---
+
+## Success
+
+- [x] Train and predict packages are pinned
+- [x] README has the install and activate steps
+- [x] `python src/predict.py` starts in that environment
+
+[↑ Contents](#table-of-contents)

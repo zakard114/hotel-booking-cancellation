@@ -1,19 +1,44 @@
-# Phase 3 — train.py (4/7)
+# Phase 3 — train.py (4/9)
 
-### 목표
+**Done** (2026-11-07).
 
-노트북의 최종 파이프라인을 `src/train.py`로 옮겨 모델 아티팩트를 `models/`에 저장한다.
+## Table of contents
 
-### 산출물
+- [Goal](#goal)
+- [Output](#output)
+- [Out of scope](#out-of-scope)
+- [Success](#success)
 
-- 동작하는 `src/train.py`
-- `models/` 아래 저장 파일 (gitignore 대상일 수 있음 — README에 재학습 방법)
+---
 
-### 하지 말 것
+## Goal
 
-API·Docker·클라우드.
+Move the winning pipeline into `src/train.py` and save the artifact under `models/`.
 
-### 성공 기준
+[↑ Contents](#table-of-contents)
 
-- [ ] E:에서 `python src/train.py` (또는 합의된 실행법) 성공
-- [ ] 아티팩트 경로가 README/스크립트와 일치
+---
+
+## Output
+
+- `src/train.py`
+- `models/model.bin` — pickle of `(DictVectorizer, XGBoost)`, 150 boosting rounds
+
+[↑ Contents](#table-of-contents)
+
+---
+
+## Out of scope
+
+API, Docker, and cloud.
+
+[↑ Contents](#table-of-contents)
+
+---
+
+## Success
+
+- [x] `python src/train.py` succeeds on E:
+- [x] Artifact path matches the README and `predict.py`
+
+[↑ Contents](#table-of-contents)

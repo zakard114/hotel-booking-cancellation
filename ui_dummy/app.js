@@ -125,12 +125,12 @@
       .join("");
   }
 
-  const HOLD = "#1f6b4f";
-  const RISK = "#6e3330";
-  const SEA = "#2f6f7a";
-  const SAFFRON = "#b86a0c";
-  const GRID = "rgba(12,22,34,0.12)";
-  const AXIS = "rgba(12,22,34,0.45)";
+  const HOLD = "#6dcca4";
+  const RISK = "#e39a94";
+  const SEA = "#8fd0db";
+  const SAFFRON = "#e28a1a";
+  const GRID = "rgba(231,238,244,0.16)";
+  const AXIS = "rgba(231,238,244,0.62)";
 
   let boardTimer = null;
 

@@ -1,19 +1,44 @@
-# Phase 2 — Models (3/7)
+# Phase 2 — Models (3/9)
 
-### 목표
+**Done** (2026-11-06).
 
-logistic regression + Random Forest + XGBoost를 학습·비교하고, 검증으로 하나를 고른다 (튜닝 포함 시 루브릭 유리).
+## Table of contents
 
-### 산출물
+- [Goal](#goal)
+- [Output](#output)
+- [Out of scope](#out-of-scope)
+- [Success](#success)
 
-노트북 Model 섹션 + 선정 근거 문단 (README 초안 가능).
+---
 
-### 하지 말 것
+## Goal
 
-`train.py` 최종 export 강행, 서비스/Docker, 클라우드.
+Train logistic regression, a random forest, and XGBoost. Compare them on the validation split and pick one. A small tune is part of the comparison.
 
-### 성공 기준
+[↑ Contents](#table-of-contents)
 
-- [ ] 선형 + 트리 계열 최소 2종 이상 (목표는 3종)
-- [ ] 검증 지표와 “왜 이 모델” 한 단락
-- [ ] 타당성 체크된 최종 지침으로만 실행
+---
+
+## Output
+
+`scripts/phase2_models.py`. Selected model: XGBoost, validation ROC-AUC about 0.95. The target is about 37% canceled, so the comparison metric is ROC-AUC. Leakage columns are excluded. Seed is 42.
+
+[↑ Contents](#table-of-contents)
+
+---
+
+## Out of scope
+
+Final export in `train.py`, the service, Docker, and cloud.
+
+[↑ Contents](#table-of-contents)
+
+---
+
+## Success
+
+- [x] Linear model plus tree models (three models)
+- [x] Validation metric and a short reason for the winner
+- [x] Same split and preprocessing for every model
+
+[↑ Contents](#table-of-contents)

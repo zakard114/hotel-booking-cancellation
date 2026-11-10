@@ -1,58 +1,78 @@
-# Cloud deploy notes (bonus · 9/9)
+# Cloud deploy notes (bonus, gate 9/9)
 
-에이전트 쪽 스캐폴드는 끝남. **클릭·계정·스모크는 학습자.**  
-전체 클릭 경로: [`../_planning/gemini_packets/phase_8_final_guide.md`](../_planning/gemini_packets/phase_8_final_guide.md).
-
-**게이트 doing.** `done`은 학습자 명시(「클라우드 끝」) 후에만. 가짜 URL 금지.
+The service is **live**. Click path and smoke results are recorded here. Full click notes: [`../_planning/gemini_packets/phase_8_final_guide.md`](../_planning/gemini_packets/phase_8_final_guide.md).
 
 **Live URL:** https://hotel-cancel-api.onrender.com  
-T4 smoke (2026-11-10): `POST /predict` → `cancel_probability≈0.611555278301239`, `is_canceled=True`.
+Smoke (2026-11-10): `POST /predict` → `cancel_probability≈0.611555278301239`, `is_canceled=true`.
 
-## 전제 (에이전트 완료)
+## Table of contents
 
-| 항목 | 값 |
-|------|-----|
+- [What is already in the repo](#what-is-already-in-the-repo)
+- [Deploy clicks](#deploy-clicks)
+- [Failure hints](#failure-hints)
+- [Manual alternative](#manual-alternative)
+- [Submission](#submission)
+
+---
+
+## What is already in the repo
+
+| Item | Value |
+|------|--------|
 | GitHub | https://github.com/zakard114/hotel-booking-cancellation (`main`) |
-| 모델 | `models/model.bin` **git 추적** (`!models/model.bin`) |
-| PORT | `src/predict.py` → `os.environ.get("PORT", "9696")`, `debug=False`, `0.0.0.0` |
-| Blueprint | 루트 `render.yaml` · Docker Free |
+| Model | `models/model.bin` is tracked (`!models/model.bin`) |
+| PORT | `src/predict.py` reads `os.environ.get("PORT", "9696")`, `debug=False`, `0.0.0.0` |
+| Blueprint | root `render.yaml`, Docker, free plan |
+| Desk | `GET /` serves HoldRisk. Ops board: `GET /ops/board` |
 
-## 학습자 클릭 (요약)
+[↑ Contents](#table-of-contents)
 
-1. https://render.com → GitHub로 가입/로그인 → https://dashboard.render.com  
-2. **New +** → **Blueprint**  
-3. Connect GitHub → 레포 **`zakard114/hotel-booking-cancellation`**  
-4. `render.yaml` 확인 · 브랜치 **`main`** → **Apply**  
-5. 값이 맞는지 확인: name `hotel-cancel-api`, oregon, docker, free, `./Dockerfile`, context `.`, health check **`/health`**  
-6. **성공:** 초록 **Live** + 헤더 **`.onrender.com`** URL 복사  
-7. Free 콜드 스타트 30–60초+ 가능  
-8. PowerShell 스모크 (`YOUR-SERVICE`만 교체) — body는 `phase_8_final_guide.md`와 동일:
+---
 
-```powershell
-$base = "https://hotel-cancel-api.onrender.com"
-Invoke-RestMethod -Method Post -Uri "$base/predict" `
-  -ContentType "application/json" -Body $body
-```
+## Deploy clicks
 
-9. README에 실 URL + 절차. Evidence 뒤에만 Cloud Score **1**(문서) 또는 **2**(Live/시연). 루트 README Evaluation은 Live 증거로 **2/2** (게이트 `done`과는 별개).
+1. https://render.com — sign in with GitHub — https://dashboard.render.com
+2. **New +** → **Blueprint**
+3. Connect GitHub → repo **`zakard114/hotel-booking-cancellation`**
+4. Confirm `render.yaml`, branch **`main`** → **Apply**
+5. Check: name `hotel-cancel-api`, oregon, docker, free, `./Dockerfile`, context `.`, health check **`/health`**
+6. Success: green **Live** and a header URL ending in `.onrender.com`
+7. The free plan can cold-start for 30–60 seconds
+8. Smoke with the body in the root README (`$base` = the live URL)
 
-## 실패 로그 힌트
+A push to `main` rebuilds this web service.
 
-| 증상 | 의미 |
-|------|------|
-| `COPY` / `models` / `No such file` | 원격에 모델 없음 |
-| `FileNotFoundError` … `model.bin` | 기동 시 모델 경로 실패 |
-| `libgomp` / `ImportError` (xgboost) | slim에 OpenMP 누락 — Dockerfile `libgomp1` 확인 |
-| `Health check` / `failed to become healthy` | `/health` 미응답·PORT 미바인딩 |
-| pip / dependency ERROR | `requirements.txt` 설치 실패 |
-| Live인데 `/` 만 404 | 정상 — `GET /health` 또는 `POST /predict` |
+[↑ Contents](#table-of-contents)
 
-## 대안 (수동)
+---
+
+## Failure hints
+
+| Symptom | Meaning |
+|---------|---------|
+| `COPY` / `models` / `No such file` | The image build cannot see `model.bin` |
+| `FileNotFoundError` … `model.bin` | The process cannot open the model path at boot |
+| `libgomp` / `ImportError` (xgboost) | The slim image is missing OpenMP — check `libgomp1` in the Dockerfile |
+| Health check failed | `/health` did not respond, or the process did not bind `PORT` |
+| pip / dependency ERROR | `requirements.txt` failed to install |
+| Live, but the desk is blank | Open `GET /` after the cold start, or call `GET /health` and `POST /predict` |
+
+[↑ Contents](#table-of-contents)
+
+---
+
+## Manual alternative
 
 **New +** → **Web Service** → Docker → Name `hotel-cancel-api`, Branch `main`, Dockerfile `./Dockerfile`, Context `.`, Free, Health check `/health` → **Create Web Service**.
 
-## 제출 (선택)
+[↑ Contents](#table-of-contents)
 
-- Repo: https://github.com/zakard114/hotel-booking-cancellation  
-- **Commit ID**  
+---
+
+## Submission
+
+- Repo: https://github.com/zakard114/hotel-booking-cancellation
+- Commit ID: the `main` commit you submit
 - Certificate name: **Heeju Yang**
+
+[↑ Contents](#table-of-contents)

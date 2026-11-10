@@ -298,28 +298,26 @@ input:focus, select:focus {
 
 .prob {
   margin: 0 0 8px;
+  display: inline-block;
   font-family: var(--display);
   font-weight: 800;
   font-size: clamp(3rem, 7vw, 4.6rem);
   letter-spacing: -0.05em;
-  line-height: 0.95;
+  /* Room above the line box so Newsreader's "2" is not clipped by background-clip. */
+  line-height: 1.2;
+  padding: 0.14em 0.06em 0.02em;
   color: var(--ink);
   font-variant-numeric: tabular-nums;
   background-image: none;
   -webkit-text-fill-color: currentColor;
+  overflow: visible;
 }
 .prob.high {
+  /* Solid fill. background-clip:text was slicing the top of Newsreader's "2". */
   color: var(--risk);
-  background-image: radial-gradient(
-    120% 90% at 92% 108%,
-    var(--risk-bloom) 0%,
-    var(--risk) 42%,
-    #452422 82%
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
+  background-image: none;
+  -webkit-text-fill-color: currentColor;
+  background-clip: border-box;
 }
 .prob.low {
   color: var(--hold);
@@ -382,10 +380,21 @@ input:focus, select:focus {
 }
 
 .ops-desk {
+  --ink: #e7eef4;
+  --ink-mid: #b7c5d2;
+  --line: rgba(231, 238, 244, 0.14);
+  --line-soft: rgba(231, 238, 244, 0.08);
+  --sea: #8fd0db;
+  --risk: #e39a94;
+  --hold: #6dcca4;
   width: min(1080px, 100%);
-  background: var(--glass-strong);
-  border: 1px solid var(--line);
-  backdrop-filter: blur(18px);
+  color: var(--ink);
+  background:
+    radial-gradient(880px 420px at 0% 0%, rgba(47, 111, 122, 0.42), transparent 58%),
+    radial-gradient(640px 360px at 100% 0%, rgba(226, 138, 26, 0.16), transparent 52%),
+    linear-gradient(168deg, #1a2a38 0%, #101920 42%, #0c141c 100%);
+  border: 1px solid rgba(231, 238, 244, 0.12);
+  box-shadow: 0 28px 70px rgba(8, 14, 22, 0.35);
   padding: 22px 26px 28px;
   display: flex;
   flex-direction: column;
@@ -672,6 +681,59 @@ input:focus, select:focus {
 .audit-table tr.error td.path { color: var(--risk); }
 .audit-table tr.risk td.flag,
 .audit-table tr.risk td.p { color: var(--risk); font-weight: 600; }
+
+.ops-desk .ghost {
+  background: rgba(231, 238, 244, 0.06);
+  border-color: rgba(231, 238, 244, 0.2);
+  color: var(--ink);
+}
+.ops-desk .ghost:hover { border-color: var(--saffron); color: #fff; }
+
+.ops-desk .tab { color: rgba(231, 238, 244, 0.62); }
+.ops-desk .tab.on { color: #f7f4ee; }
+
+.ops-desk .kv dt,
+.ops-desk .api-table th,
+.ops-desk .m-label {
+  color: rgba(231, 238, 244, 0.55);
+}
+
+.ops-desk .metric,
+.ops-desk .chart-card {
+  background: rgba(255, 255, 255, 0.045);
+  border-color: rgba(231, 238, 244, 0.1);
+}
+
+.ops-desk .ceiling input,
+.ops-desk input {
+  background: rgba(6, 10, 16, 0.45);
+  color: var(--ink);
+  border-color: rgba(231, 238, 244, 0.18);
+}
+
+.ops-desk .set-limit {
+  background: #e7eef4;
+  color: #0c1622;
+}
+.ops-desk .set-limit:hover {
+  background: var(--saffron);
+  color: #1a1206;
+}
+
+.ops-desk .audit {
+  background: rgba(6, 10, 16, 0.35);
+  border-color: rgba(231, 238, 244, 0.1);
+}
+
+.ops-desk .sample {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(231, 238, 244, 0.08);
+  color: #e7eef4;
+}
+
+.ops-desk code {
+  color: #f0c27a;
+}
 
 @media (max-width: 820px) {
   .shell {

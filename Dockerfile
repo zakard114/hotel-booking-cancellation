@@ -1,49 +1,49 @@
 FROM python:3.11-slim
-# FROM: 컨테이너의 출발 베이스 이미지를 고른다.
-# 목적(용도): Python 3.11이 들어 있는 얇은 이미지에서 서비스를 돌리기 위함.
-# 이 시점: Dockerfile 첫 줄 — 이후 층이 이 이미지 위에 쌓인다.
+# FROM: base image for every later layer.
+# Purpose: a small image that already has Python 3.11.
+# When: first line of the Dockerfile.
 
 WORKDIR /app
-# WORKDIR: 컨테이너 안 작업 폴더를 /app 으로 정한다.
-# 목적(용도): COPY·RUN·CMD가 같은 경로 기준으로 실행되게 한다.
-# 이 시점: 베이스 직후, 파일을 넣기 전.
+# WORKDIR: set the in-container working directory to /app.
+# Purpose: COPY, RUN, and CMD share one path.
+# When: right after the base image, before any files are copied.
 
-# slim 이미지에 XGBoost OpenMP 런타임(libgomp)이 없을 때 ImportError를 막는다.
+# libgomp is the OpenMP runtime XGBoost needs. Without it, import fails on slim.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
-# COPY requirements.txt: 호스트의 pin 목록을 이미지 /app 으로 복사한다.
-# 목적(용도): 나중에 pip가 설치할 패키지 목록을 이미지에 넣기 위함.
-# 이 시점: 코드/모델보다 먼저 — deps 층만 캐시되게 하려는 관례.
+# COPY requirements.txt: put the pin list at /app.
+# Purpose: pip installs from this file, and this layer can cache before code changes.
+# When: before source and model copies.
 
 RUN pip install --no-cache-dir -r requirements.txt
-# RUN pip install: 이미지 안에서 requirements의 패키지를 설치한다.
-# 목적(용도): 컨테이너에 pandas/sklearn/xgboost/flask 환경을 만든다.
-# 이 시점: requirements만 복사된 직후.
+# RUN pip install: install the pinned packages inside the image.
+# Purpose: pandas, scikit-learn, xgboost, and flask are present at runtime.
+# When: immediately after the requirements copy.
 
 COPY src/ ./src/
-# COPY src/: 예측 서비스 코드를 이미지에 넣는다.
-# 목적(용도): 컨테이너에서 predict.py를 실행할 수 있게 한다.
-# 이 시점: deps 설치 후.
+# COPY src/: prediction service code.
+# Purpose: the container can run predict.py.
+# When: after dependencies are installed.
 
 COPY ui_dummy/ ./ui_dummy/
-# COPY ui_dummy/: HoldRisk desk + Ops static UI.
-# 목적(용도): Flask가 / 와 /ui/* 로 프론트를 같이 서빙하기 위함.
-# 이 시점: src 복사 직후.
+# COPY ui_dummy/: HoldRisk desk and Ops static files.
+# Purpose: Flask serves / and /ui/* from this folder.
+# When: right after src/ is copied.
 
 COPY models/ ./models/
-# COPY models/: model.bin 등 학습 아티팩트를 이미지에 넣는다.
-# 목적(용도): predict.py가 /app/models/model.bin 을 로드하게 한다.
-# 이 시점: src 복사와 같은 단계 — 런타임에 모델이 있어야 한다.
+# COPY models/: trained artifact, including model.bin.
+# Purpose: predict.py loads /app/models/model.bin at boot.
+# When: same stage as the source copy. The model must exist at runtime.
 
 EXPOSE 9696
-# EXPOSE: 컨테이너가 9696 포트를 쓴다고 문서화한다.
-# 목적(용도): 실행 시 -p 매핑할 포트를 분명히 한다.
-# 이 시점: 파일·deps가 준비된 뒤, 시작 명령 직전.
+# EXPOSE: document that the process listens on 9696.
+# Purpose: the host maps that port with -p.
+# When: after files and dependencies, before the start command.
 
 CMD ["python", "src/predict.py"]
-# CMD: 컨테이너가 뜰 때 기본으로 실행할 명령이다.
-# 목적(용도): Flask 예측 서버를 0.0.0.0:9696 에서 켠다.
-# 이 시점: 이미지 정의의 마지막 — run 하면 이 명령이 돌아간다.
+# CMD: default command when the container starts.
+# Purpose: run the Flask server (it binds 0.0.0.0 and PORT, default 9696).
+# When: last line. docker run executes this.

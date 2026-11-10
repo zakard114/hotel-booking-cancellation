@@ -13,4 +13,4 @@ services:
     dockerContext: .
     healthCheckPath: /health
     # Render sets PORT; predict.py reads os.environ.get("PORT", "9696").
-    # GET /health returns 200; POST /predict is the real API (GET / is still 404).
+    # GET /health returns 200. GET / is the HoldRisk desk. POST /predict is the scoring API.

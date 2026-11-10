@@ -1,8 +1,8 @@
-"""Phase 1 · EDA (2/9) — VS Code / 터미널 실행용 미러.
+"""Phase 1 EDA (2/9) — terminal mirror of the notebook.
 
-노트북과 같은 단계. 편집·리뷰는 이 .py가 빠르고, 제출용 서사는 notebooks/notebook.ipynb.
+Same steps as the notebook. This file is the fast edit path. The submission narrative is notebooks/notebook.ipynb.
 
-실행 (프로젝트 루트에서):
+Run from the project root:
   . E:\\IT_SPACES\\AI\\scripts\\use_e_drive.ps1
   cd E:\\IT_SPACES\\AI\\Projects\\ml\\hotel-booking-cancellation
   .\\.venv\\Scripts\\python.exe scripts\\phase1_eda.py
@@ -30,7 +30,7 @@ print("\nMissing (nonzero):\n", missing[missing > 0])
 print("\nis_canceled counts:\n", df["is_canceled"].value_counts())
 print("\nis_canceled %:\n", df["is_canceled"].value_counts(normalize=True) * 100)
 
-# --- nunique (leakage/feature memo는 노트북 마크다운 참고) ---
+# nunique. The leakage and feature memo is in the notebook markdown.
 print("\nnunique:\n", df.nunique())
 
 # --- Split (no fit) ---

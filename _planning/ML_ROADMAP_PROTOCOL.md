@@ -1,208 +1,167 @@
-# ML 프로젝트 범용 로드맵 프로토콜 + 호텔 예약 취소 대입
+# Roadmap protocol — Hotel Booking Cancellation
 
-**코스 루브릭 요소**를 파이프라인 대명사로 두고, 각 요소에 **실행 게이트 `(x/9)`** 를 1:1에 가깝게 붙인 뒤, **Hotel Booking Cancellation** 을 대입한다.  
-루브릭에 맞춰 단계를 늘리는 것이 원칙이다 (묶음은 예외적으로만).
+Course rubric items are the pipeline names. Each item has an execution gate `(x/9)`. This file maps those gates onto HoldRisk.
 
-**제품 경계:** 부킹 플랫폼 애드온이 아님. **메인 = 예약 취소 위험도 예측 서비스** (`is_canceled`).
+**Product boundary:** the cancel-risk service is the product (`is_canceled`). It is not a booking-site add-on.
 
-- 스킬: `ml-project-roadmap-protocol`
-- 루프: `phase-gemini-beginner-guide` · [`STUDY_WORKFLOW.md`](STUDY_WORKFLOW.md)
-- 체크: [`CHECKPOINTS.md`](CHECKPOINTS.md) — Score는 **공식 루브릭만**
-- 루트: `E:\IT_SPACES\AI\Projects\ml\hotel-booking-cancellation\`
-- **n = 9** (빌드 게이트). Peer reviews는 제출 후(표 밖).
+- Checks: [`CHECKPOINTS.md`](CHECKPOINTS.md) — scores use the official rubric only
+- Root: `E:\IT_SPACES\AI\Projects\ml\hotel-booking-cancellation\`
+- **n = 9** build gates. Peer reviews are after submit.
 
-읽는 법: **루브릭 의미 → 게이트 (x/9) 개요·용도 → 호텔 대입**.
+Read order: rubric role → gate `(x/9)` → what this repo did.
 
-공식: [ML Zoomcamp projects](https://github.com/DataTalksClub/machine-learning-zoomcamp/blob/main/projects/README.md)
+Official list: [ML Zoomcamp projects](https://github.com/DataTalksClub/machine-learning-zoomcamp/blob/main/projects/README.md)
 
----
+## Table of contents
 
-## Problem description (max 2) · 로드맵 (1/9)
-
-### 코스 루브릭 — 파이프라인에서의 역할
-
-문제·맥락·사용 장면을 말해 주는 입구. 여기가 흐리면 이후 단계가 전부 공중분해된다.
-
-### 로드맵 게이트 (1/9) — 문제·성공 기준·학습 루프
-
-- 타깃·지표·금지 주제 확인, 레포 뼈대, 배우며 만들기 루프 고정.
-- EDA/학습 코드는 하지 않음.
-
-### 호텔 대입
-
-- 이진분류 · `is_canceled` · 취소 위험도 API가 메인.
-- Kaggle hotel-booking-demand · E: · 패킷→Gemini→타당성.
-- **상태: done** (Phase 0 지침 채택, 2026-11-05).
+- [Problem description](#problem-description)
+- [EDA](#eda)
+- [Model training](#model-training)
+- [Export notebook to script](#export-notebook-to-script)
+- [Model deployment](#model-deployment)
+- [Dependency and environment](#dependency-and-environment)
+- [Containerization](#containerization)
+- [Reproducibility](#reproducibility)
+- [Cloud deployment](#cloud-deployment)
+- [At a glance](#at-a-glance)
 
 ---
 
-## EDA (max 2) · 로드맵 (2/9)
+## Problem description
 
-### 코스 루브릭 — 파이프라인에서의 역할
+The entrance: problem, context, and who uses the result.
 
-표를 믿기 전 검증: 결측·범위·타깃·특성·중요도. “그냥 fit”을 막는다.
+Gate work: target, metric, banned topics, repo skeleton, learning loop. No EDA or training code.
 
-### 로드맵 게이트 (2/9) — 데이터 확보·전처리·EDA·피처
+This repo: binary `is_canceled`. Kaggle hotel-booking-demand. **Done** 2026-11-05. README Problem is the score-2 evidence.
 
-- 데이터 받는 법 문서화, 누수 제거, EDA 노트북, split 시드/비율.
-- 넣을 컬럼 초안까지 (최종 튜닝은 다음).
-
-### 호텔 대입
-
-- `data/` + `notebooks/notebook.ipynb`.
-- `is_canceled` 비율, 예약 이후 정보 제외, 범주/수치 분리.
+[↑ Contents](#table-of-contents)
 
 ---
 
-## Model training (max 3) · 로드맵 (3/9)
+## EDA
 
-### 코스 루브릭 — 파이프라인에서의 역할
+Check the table before any fit: missing values, target, features, leakage.
 
-여러 모델 비교·튜닝·선정. 한 모델·무튜닝은 낮은 점수.
+Gate work: how to get the data, drop leakage, EDA notebook, seeded split, feature draft.
 
-### 로드맵 게이트 (3/9) — 다중 모델·튜닝·선정
+This repo: `data/` + `notebooks/notebook.ipynb`. About 37% canceled. Post-booking columns excluded. **Done** 2026-11-06.
 
-- 동일 전처리·분할 위에서 후보 학습·검증 지표 비교·선정 이유 기록.
-
-### 호텔 대입
-
-- Logistic + RF + XGB · val ROC-AUC · 선정 한 줄 이유.
+[↑ Contents](#table-of-contents)
 
 ---
 
-## Exporting notebook to script (max 1) · 로드맵 (4/9)
+## Model training
 
-### 코스 루브릭 — 파이프라인에서의 역할
+Compare models, tune, and record why one was chosen.
 
-탐색(노트북) → 재현(스크립트). 최종 학습이 스크립트에 있어야 한다.
+Gate work: same preprocessing and split, validation metric, selection note.
 
-### 로드맵 게이트 (4/9) — train 스크립트·아티팩트
+This repo: logistic regression, random forest, and XGBoost. Validation ROC-AUC. Winner XGBoost, about 0.95. **Done** 2026-11-06.
 
-- 우승 파이프라인만 `train.py`로. 전처리기+모델 저장.
-
-### 호텔 대입
-
-- `src/train.py` → `models/` 또는 `artifacts/`.
+[↑ Contents](#table-of-contents)
 
 ---
 
-## Model deployment (max 1) · 로드맵 (5/9)
+## Export notebook to script
 
-### 코스 루브릭 — 파이프라인에서의 역할
+The exploration stays in the notebook. The final train run lives in a script.
 
-모델을 HTTP 서비스로 제공. 제품 본체의 런타임.
+Gate work: winning pipeline only, in `train.py`, preprocessor and model saved together.
 
-### 로드맵 게이트 (5/9) — 예측 웹 서비스
+This repo: `src/train.py` → `models/model.bin`. **Done** 2026-11-07.
 
-- Flask/FastAPI `predict` (+ `health`). 로컬 1건 성공.
-
-### 호텔 대입
-
-- `src/predict.py` · JSON → 취소 확률/라벨.
+[↑ Contents](#table-of-contents)
 
 ---
 
-## Dependency and environment (max 2) · 로드맵 (6/9)
+## Model deployment
 
-### 코스 루브릭 — 파이프라인에서의 역할
+Serve the model over HTTP.
 
-남이 같은 라이브러리로 돌리게 함. deps 파일 + env/venv 안내.
+Gate work: Flask `predict` and `health`. One local call succeeds.
 
-### 로드맵 게이트 (6/9) — 의존성·가상환경 고정
+This repo: `src/predict.py`. JSON in, cancel probability and label out. **Done** 2026-11-07.
 
-- requirements/pyproject 등 버전 고정.
-- README에 설치·활성화 절차 (E: / use_e_drive).
-- **이 게이트에서는 Docker 필수가 아님** — 컨테이너는 다음.
-
-### 호텔 대입
-
-- 루트 deps를 import에 맞게 채움 · README How to run의 venv/pip 구간 완성.
+[↑ Contents](#table-of-contents)
 
 ---
 
-## Containerization (max 2) · 로드맵 (7/9)
+## Dependency and environment
 
-### 코스 루브릭 — 파이프라인에서의 역할
+Someone else can install the same libraries.
 
-이미지로 OS까지 맞춰 서비스를 재현. Dockerfile + build/run 문서·실행.
+Gate work: pinned requirements and README install steps. Docker is the next gate, not this one.
 
-### 로드맵 게이트 (7/9) — Docker 이미지·실행
+This repo: `requirements.txt` pins and the README How to run block. **Done** 2026-11-08.
 
-- Dockerfile 완성, README에 build/run, 실제로 컨테이너에서 API 확인.
-- deps(6/9)가 먼저 닫혀 있어야 함.
-
-### 호텔 대입
-
-- 루트 `Dockerfile` · 포트 매핑 · 컨테이너 health+predict.
+[↑ Contents](#table-of-contents)
 
 ---
 
-## Reproducibility (max 1) · 로드맵 (8/9)
+## Containerization
 
-### 코스 루브릭 — 파이프라인에서의 역할
+The service runs from an image, including the OS libraries.
 
-노트북·train·데이터 접근을 **남이 오류 없이** 따라 할 수 있는지.  
-앞 게이트에서 쌓은 안내를 README/체크리스트로 **최종 검증**하는 단계.
+Gate work: Dockerfile, documented `build` and `run`, one prediction from the container. Gate 6/9 is already closed.
 
-### 로드맵 게이트 (8/9) — 재현 점검·README 증거
+This repo: root `Dockerfile`, port 9696, health and predict from the container. **Done** 2026-11-09.
 
-- 클린 클론(또는 동등) 관점으로: 데이터 받는 법, 시드, 명령 순서가 README에 있는지.
-- Evaluation Evidence 링크를 채울 수 있는지 확인.
-- 제출용 커밋을 아직 안 박아도 되지만, “이 커밋이면 재현된다” 후보를 정한다.
-
-### 호텔 대입
-
-- README Quick start / data / train / API / docker 문구 정리.
-- `CHECKPOINTS`·Evaluation Score를 증거에 맞게 갱신 (과장 금지).
-- **상태: done** (2026-11-09) — README reproduce + seed 42 + `train.py` 스모크 · Score 1/1.
+[↑ Contents](#table-of-contents)
 
 ---
 
-## Cloud deployment (max 2, bonus) · 로드맵 (9/9)
+## Reproducibility
 
-### 코스 루브릭 — 파이프라인에서의 역할
+A reviewer can rerun the notebook and `train.py` without guessing where the data is.
 
-로컬 Docker 위의 **보너스**. URL 또는 시연 증거. 없어도 본전.
+Gate work: download path, seeds, and command order in the README.
 
-### 로드맵 게이트 (9/9) — (선택) 클라우드·제출 마감
+This repo: README reproduce steps, seed 42, `train.py` smoke. Score 1/1. **Done** 2026-11-09.
 
-- (선택) Render/Fly 등 + README 배포 절.
-- 제출 폼: repo URL + **Commit ID**. Certificate: Heeju Yang.
-- 이후 Peer reviews 3건 (별도).
-
-### 호텔 대입
-
-- **상태: done** (2026-11-10). Live https://hotel-cancel-api.onrender.com — POST /predict → cancel_probability≈0.6116, is_canceled=true. Evaluation Cloud **2/2** · subtotal **15/16**. 가이드: `gemini_packets/phase_8_final_guide.md`.
+[↑ Contents](#table-of-contents)
 
 ---
 
-## 한눈에
+## Cloud deployment
+
+Optional public URL on top of the local image.
+
+Gate work: Render (or equivalent) plus a README deploy section. Submit form: repo URL and commit ID. Certificate name: Heeju Yang.
+
+This repo: **done** 2026-11-10. Live https://hotel-cancel-api.onrender.com — `POST /predict` → probability about 0.6116, `is_canceled=true`. Cloud score **2/2**.
+
+[↑ Contents](#table-of-contents)
+
+---
+
+## At a glance
 
 ```text
-Problem description            → (1/9) 문제·루프              [done]
-EDA                            → (2/9) 데이터·EDA·피처         [done]
-Model training                 → (3/9) 다중 모델·튜닝        [done]
-Export notebook to script      → (4/9) train·아티팩트       [done]
-Model deployment               → (5/9) 예측 API              [done]
-Dependency and environment     → (6/9) deps·venv            [done]
-Containerization               → (7/9) Docker               [done]
-Reproducibility                → (8/9) 재현·README 증거     [done]
-Cloud deployment (bonus)       → (9/9) 클라우드·제출        [done]
-Peer reviews (extra)           → 제출 후
+Problem description            → (1/9) problem and loop        [done]
+EDA                            → (2/9) data, EDA, features     [done]
+Model training                 → (3/9) models, tune, select    [done]
+Export notebook to script      → (4/9) train script, artifact  [done]
+Model deployment               → (5/9) predict API             [done]
+Dependency and environment     → (6/9) deps and venv           [done]
+Containerization               → (7/9) Docker                  [done]
+Reproducibility                → (8/9) reproduce path          [done]
+Cloud deployment (bonus)       → (9/9) cloud and submit        [done]
+Peer reviews (extra)           → after submit
 ```
 
-### 옛 PHASE 파일 매핑 (참고)
+Older `phases/PHASE_*` files keep their names. The mapping is:
 
-기존 `phases/PHASE_0`…`PHASE_6` 파일명은 당분간 유지할 수 있다. 의미 대응:
-
-| 새 게이트 | 옛 파일 (대략) |
-|----------|----------------|
+| Gate | Older file (approx.) |
+|------|----------------------|
 | (1/9) | PHASE_0 |
 | (2/9) | PHASE_1 |
 | (3/9) | PHASE_2 |
 | (4/9) | PHASE_3 |
 | (5/9) | PHASE_4 |
-| (6/9)+(7/9) | PHASE_5를 deps / Docker로 분할 |
-| (8/9)+(9/9) | PHASE_6을 재현 / 클라우드·제출로 분할 |
+| (6/9) and (7/9) | PHASE_5 split into deps and Docker |
+| (8/9) and (9/9) | later files split into reproduce and cloud |
 
-새 패킷·로그는 **(x/9) + 루브릭 이름**을 기준으로 쓴다.
+New notes use `(x/9)` plus the rubric name.
+
+[↑ Contents](#table-of-contents)
