@@ -156,26 +156,57 @@ Content-Type: application/json
 
         <div data-panel="grafana" hidden>
           <div class="eyebrow">Grafana</div>
-          <p class="note">In-app Grafana board from <code>GET /ops/board</code> on this host. Counts and audit rows update after each predict. A separate Grafana server is optional and not required.</p>
+          <h2 class="entry-title">Predict control</h2>
+          <p class="note" id="grafana-status">Requests per second by HTTP status, P95 and P99 latency, cancel probability, and the audit stream. Hold is green. Flagged cancel uses the risk color. A separate Grafana server is optional.</p>
           <div class="metrics" id="board-metrics">
+            <div class="metric"><span class="m-label">Requests</span><strong id="m-requests">0</strong></div>
+            <div class="metric"><span class="m-label">HTTP error rate</span><strong id="m-errors">0%</strong></div>
+            <div class="metric"><span class="m-label">Average latency</span><strong id="m-latency" class="ok">0 ms</strong></div>
             <div class="metric"><span class="m-label">Predicts</span><strong id="m-count">0</strong></div>
-            <div class="metric"><span class="m-label">Flagged high</span><strong id="m-high">0</strong></div>
-            <div class="metric"><span class="m-label">Avg p</span><strong id="m-avg">—</strong></div>
+            <div class="metric"><span class="m-label">Flagged</span><strong id="m-high">0</strong></div>
             <div class="metric"><span class="m-label">Threshold</span><strong id="m-thr">0.50</strong></div>
           </div>
-          <table class="api-table board-table">
-            <thead>
-              <tr>
-                <th>Time</th>
-                <th>p</th>
-                <th>Flag</th>
-                <th>Hotel</th>
-                <th>Lead</th>
-                <th>Trace</th>
-              </tr>
-            </thead>
-            <tbody id="board-body"></tbody>
-          </table>
+          <div class="chart-card">
+            <h3>Request rate by status</h3>
+            <svg id="chart-rate" viewBox="0 0 640 180" role="img" aria-label="Requests per second by HTTP status"></svg>
+            <div class="legend" id="rate-legend"></div>
+          </div>
+          <div class="chart-card">
+            <h3>Latency P95 and P99</h3>
+            <svg id="chart-latency" viewBox="0 0 640 180" role="img" aria-label="P95 and P99 latency in milliseconds"></svg>
+            <div class="legend" id="latency-legend"></div>
+          </div>
+          <div class="chart-card">
+            <h3>Cancel probability</h3>
+            <svg id="chart-prob" viewBox="0 0 640 180" role="img" aria-label="Cancel probability over recent predicts"></svg>
+            <div class="legend" id="prob-legend"></div>
+          </div>
+          <div class="chart-card">
+            <h3>Status mix</h3>
+            <svg id="chart-status" viewBox="0 0 640 180" role="img" aria-label="HTTP status counts"></svg>
+            <div class="legend" id="status-legend"></div>
+          </div>
+          <div class="chart-card">
+            <h3>Audit log</h3>
+            <p class="note" id="audit-filter">Recent requests on this process.</p>
+            <div class="audit">
+              <table class="api-table board-table audit-table">
+                <thead>
+                  <tr>
+                    <th>Time</th>
+                    <th>Status</th>
+                    <th>Method</th>
+                    <th>Path</th>
+                    <th class="num">ms</th>
+                    <th>p</th>
+                    <th>Flag</th>
+                    <th>Hotel</th>
+                  </tr>
+                </thead>
+                <tbody id="board-body"></tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </section>

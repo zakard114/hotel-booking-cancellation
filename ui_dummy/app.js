@@ -125,50 +125,290 @@
       .join("");
   }
 
+  const HOLD = "#1f6b4f";
+  const RISK = "#6e3330";
+  const SEA = "#2f6f7a";
+  const SAFFRON = "#b86a0c";
+  const GRID = "rgba(12,22,34,0.12)";
+  const AXIS = "rgba(12,22,34,0.45)";
+
+  let boardTimer = null;
+
+  function stopBoard() {
+    if (boardTimer) {
+      clearInterval(boardTimer);
+      boardTimer = null;
+    }
+  }
+
+  function statusColor(status) {
+    const code = Number(status);
+    if (code >= 200 && code < 300) return HOLD;
+    if (code >= 400) return RISK;
+    return SAFFRON;
+  }
+
+  function drawSeries(svg, series, yMax) {
+    if (!svg) return;
+    const width = 640;
+    const height = 180;
+    const padL = 36;
+    const padB = 22;
+    const padT = 8;
+    const padR = 8;
+    const innerW = width - padL - padR;
+    const innerH = height - padT - padB;
+    const ceiling = yMax > 0 ? yMax : 1;
+    const parts = [];
+    for (let tick = 0; tick <= 3; tick += 1) {
+      const y = padT + innerH - (innerH * tick) / 3;
+      const label = (ceiling * tick) / 3;
+      const text = ceiling >= 10 ? label.toFixed(0) : label.toFixed(2);
+      parts.push(
+        `<line x1="${padL}" y1="${y}" x2="${width - padR}" y2="${y}" stroke="${GRID}" />`
+      );
+      parts.push(
+        `<text x="${padL - 6}" y="${y + 4}" fill="${AXIS}" font-size="11" text-anchor="end">${text}</text>`
+      );
+    }
+    series.forEach((seriesItem) => {
+      const values = seriesItem.values || [];
+      if (!values.length) return;
+      const points = values.map((value, index) => {
+        const x =
+          padL + (values.length === 1 ? innerW / 2 : (innerW * index) / (values.length - 1));
+        const y = padT + innerH - (innerH * Math.min(value, ceiling)) / ceiling;
+        return `${x.toFixed(1)},${y.toFixed(1)}`;
+      });
+      parts.push(
+        `<polyline fill="none" stroke="${seriesItem.color}" stroke-width="2" points="${points.join(" ")}" />`
+      );
+    });
+    svg.innerHTML = parts.join("");
+  }
+
+  function drawBars(svg, items, yMax) {
+    if (!svg) return;
+    const width = 640;
+    const height = 180;
+    const padL = 36;
+    const padB = 28;
+    const padT = 8;
+    const padR = 8;
+    const innerW = width - padL - padR;
+    const innerH = height - padT - padB;
+    const ceiling = yMax > 0 ? yMax : 1;
+    const parts = [];
+    for (let tick = 0; tick <= 3; tick += 1) {
+      const y = padT + innerH - (innerH * tick) / 3;
+      const label = (ceiling * tick) / 3;
+      const text = ceiling >= 10 ? label.toFixed(0) : label.toFixed(1);
+      parts.push(
+        `<line x1="${padL}" y1="${y}" x2="${width - padR}" y2="${y}" stroke="${GRID}" />`
+      );
+      parts.push(
+        `<text x="${padL - 6}" y="${y + 4}" fill="${AXIS}" font-size="11" text-anchor="end">${text}</text>`
+      );
+    }
+    const n = Math.max(items.length, 1);
+    const slot = innerW / n;
+    const barW = Math.min(72, slot * 0.55);
+    items.forEach((item, index) => {
+      const h = (innerH * Math.min(item.value, ceiling)) / ceiling;
+      const x = padL + slot * index + (slot - barW) / 2;
+      const y = padT + innerH - h;
+      parts.push(
+        `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(h, 0).toFixed(1)}" fill="${item.color}" />`
+      );
+      parts.push(
+        `<text x="${(x + barW / 2).toFixed(1)}" y="${height - 8}" fill="${AXIS}" font-size="11" text-anchor="middle">${item.label}</text>`
+      );
+    });
+    svg.innerHTML = parts.join("");
+  }
+
+  function renderLegend(id, items) {
+    const box = document.getElementById(id);
+    if (!box) return;
+    box.replaceChildren();
+    items.forEach((item) => {
+      const span = document.createElement("span");
+      const swatch = document.createElement("span");
+      swatch.className = "swatch";
+      swatch.style.background = item.color;
+      span.append(swatch, document.createTextNode(item.label));
+      box.appendChild(span);
+    });
+  }
+
+  function paintCharts(board) {
+    const buckets = board.buckets || [];
+    const statuses = [];
+    buckets.forEach((bucket) => {
+      Object.keys(bucket.rates || {}).forEach((status) => {
+        if (!statuses.includes(status)) statuses.push(status);
+      });
+    });
+    statuses.sort();
+    const rateSeries = statuses.map((status) => ({
+      color: statusColor(status),
+      label: status,
+      values: buckets.map((bucket) => Number((bucket.rates || {})[status] || 0)),
+    }));
+    const rateMax = rateSeries.reduce((max, series) => Math.max(max, ...series.values, 0), 0);
+    drawSeries(document.getElementById("chart-rate"), rateSeries, rateMax);
+    renderLegend(
+      "rate-legend",
+      rateSeries.map((series) => ({ color: series.color, label: "HTTP " + series.label }))
+    );
+
+    const p95 = buckets.map((bucket) => Number(bucket.p95 || 0));
+    const p99 = buckets.map((bucket) => Number(bucket.p99 || 0));
+    let latMax = Math.max(...p95, ...p99, 0);
+    const latSeries = [
+      { color: SEA, values: p95 },
+      { color: SAFFRON, values: p99 },
+    ];
+    const rawLat = (board.series && board.series.latency_ms) || [];
+    if (latMax === 0 && rawLat.length) {
+      latSeries.length = 0;
+      latSeries.push({ color: SEA, values: rawLat.map(Number) });
+      latMax = Math.max(...rawLat, 0);
+      renderLegend("latency-legend", [{ color: SEA, label: "Latency ms" }]);
+    } else {
+      renderLegend("latency-legend", [
+        { color: SEA, label: "P95" },
+        { color: SAFFRON, label: "P99" },
+      ]);
+    }
+    drawSeries(document.getElementById("chart-latency"), latSeries, latMax);
+
+    const cancelP = (board.series && board.series.cancel_p) || [];
+    drawSeries(
+      document.getElementById("chart-prob"),
+      [{ color: SAFFRON, values: cancelP.map(Number) }],
+      1
+    );
+    renderLegend("prob-legend", [{ color: SAFFRON, label: "cancel_probability" }]);
+
+    const counts = board.status_counts || {};
+    const barItems = Object.keys(counts)
+      .sort()
+      .map((code) => ({
+        label: code,
+        value: Number(counts[code] || 0),
+        color: statusColor(code),
+      }));
+    const barMax = barItems.reduce((max, item) => Math.max(max, item.value), 0);
+    drawBars(document.getElementById("chart-status"), barItems, barMax);
+    renderLegend(
+      "status-legend",
+      barItems.map((item) => ({ color: item.color, label: "HTTP " + item.label }))
+    );
+  }
+
+  function paintAudit(rows) {
+    const note = document.getElementById("audit-filter");
+    if (!rows.length) {
+      if (note) note.textContent = "No requests yet. Run a predict.";
+      boardBody.innerHTML = '<tr><td colspan="8">No server audit rows yet. Run a predict.</td></tr>';
+      return;
+    }
+    if (note) note.textContent = `${rows.length} line${rows.length === 1 ? "" : "s"} on this process.`;
+    boardBody.innerHTML = rows
+      .map((r) => {
+        const ex = r.extra || {};
+        const flagged = ex.is_canceled === true;
+        const httpErr = Number(r.status) >= 400;
+        const p =
+          ex.cancel_probability != null
+            ? (Number(ex.cancel_probability) * 100).toFixed(1) + "%"
+            : "—";
+        const flag =
+          flagged ? "1" : ex.is_canceled === false ? "0" : "—";
+        const cls = [httpErr ? "error" : "", flagged ? "risk" : ""].filter(Boolean).join(" ");
+        return `<tr class="${cls}"><td>${r.time || "—"}</td><td class="status">${r.status ?? "—"}</td><td>${r.method || "—"}</td><td class="path">${r.path || "—"}</td><td class="num">${r.latency_ms ?? "—"}</td><td class="p">${p}</td><td class="flag">${flag}</td><td>${ex.hotel ?? "—"}</td></tr>`;
+      })
+      .join("");
+  }
+
   async function refreshBoard() {
     document.getElementById("m-thr").textContent = state.threshold.toFixed(2);
     try {
       const res = await fetch("/ops/board");
       if (!res.ok) throw new Error("board " + res.status);
       const board = await res.json();
+      const stats = board.stats || {};
+      const requests = stats.requests ?? board.request_count ?? 0;
+      const rate = Number(stats.error_rate ?? board.error_rate ?? 0);
+      const avgMs = stats.avg_ms ?? board.avg_latency_ms;
+      const flagged = board.flagged_count ?? 0;
+      document.getElementById("m-requests").textContent = String(requests);
+      const errEl = document.getElementById("m-errors");
+      errEl.textContent = `${(rate * 100).toFixed(1)}%`;
+      errEl.className = rate > 0 ? "stop" : "";
+      document.getElementById("m-latency").textContent =
+        avgMs == null ? "0 ms" : `${avgMs} ms`;
       document.getElementById("m-count").textContent = String(board.predict_count ?? 0);
-      document.getElementById("m-high").textContent = String(board.flagged_count ?? 0);
-      document.getElementById("m-avg").textContent =
-        board.avg_latency_ms != null ? board.avg_latency_ms + " ms" : "—";
-      const audit = board.audit || [];
-      boardBody.innerHTML = audit.length
-        ? audit
-            .map((r) => {
-              const ex = r.extra || {};
-              const flagged = ex.is_canceled === true;
-              const p =
-                ex.cancel_probability != null
-                  ? (Number(ex.cancel_probability) * 100).toFixed(1) + "%"
-                  : "—";
-              return `<tr class="${flagged ? "risk" : ""}"><td>${r.time}</td><td>${p}</td><td>${flagged ? "1" : ex.is_canceled === false ? "0" : "—"}</td><td>${ex.hotel ?? "—"}</td><td>${ex.lead_time ?? "—"}</td><td><code>${r.path} · ${r.status} · ${r.latency_ms}ms</code></td></tr>`;
-            })
-            .join("")
-        : '<tr><td colspan="6">No server audit rows yet. Run a predict.</td></tr>';
+      const highEl = document.getElementById("m-high");
+      highEl.textContent = String(flagged);
+      highEl.className = flagged > 0 ? "stop" : "";
+      paintCharts(board);
+      paintAudit(board.audit || []);
+      const status = document.getElementById("grafana-status");
+      if (status) {
+        status.className = "note";
+        status.textContent =
+          "Requests per second by HTTP status, P95 and P99 latency, cancel probability, and the audit stream. Hold is green. Flagged cancel uses the risk color. A separate Grafana server is optional.";
+      }
       return;
     } catch (_) {
       // Fall back to session log if board endpoint is cold/unavailable.
     }
     const n = state.log.length;
     const high = state.log.filter((r) => r.canceled).length;
-    const avg = n
-      ? (state.log.reduce((s, r) => s + r.p, 0) / n).toFixed(3)
-      : "—";
+    document.getElementById("m-requests").textContent = String(n);
+    document.getElementById("m-errors").textContent = "—";
+    document.getElementById("m-latency").textContent = "—";
     document.getElementById("m-count").textContent = String(n);
     document.getElementById("m-high").textContent = String(high);
-    document.getElementById("m-avg").textContent = avg;
+    document.getElementById("m-high").className = high > 0 ? "stop" : "";
+    paintCharts({
+      buckets: [],
+      series: { latency_ms: [], cancel_p: state.log.slice().reverse().map((r) => r.p) },
+      status_counts: {},
+    });
+    const note = document.getElementById("audit-filter");
+    if (note) note.textContent = "Session log only — board endpoint unavailable.";
+    const status = document.getElementById("grafana-status");
+    if (status) {
+      status.className = "note";
+      status.textContent = "The request board could not be read. Showing this session only.";
+    }
     boardBody.innerHTML = state.log.length
       ? state.log
           .map(
             (r) =>
-              `<tr class="${r.canceled ? "risk" : ""}"><td>${r.time}</td><td>${(r.p * 100).toFixed(1)}%</td><td>${r.canceled ? "1" : "0"}</td><td>${r.hotel}</td><td>${r.lead_time}</td><td><code>${r.trace}</code></td></tr>`
+              `<tr class="${r.canceled ? "risk" : ""}"><td>${r.time}</td><td class="status">—</td><td>POST</td><td class="path">/predict</td><td class="num">—</td><td class="p">${(r.p * 100).toFixed(1)}%</td><td class="flag">${r.canceled ? "1" : "0"}</td><td>${r.hotel}</td></tr>`
           )
           .join("")
-      : '<tr><td colspan="6">No rows yet.</td></tr>';
+      : '<tr><td colspan="8">No rows yet.</td></tr>';
+  }
+
+  function loadGrafana() {
+    refreshBoard().catch(() => {
+      const status = document.getElementById("grafana-status");
+      if (status) status.textContent = "The request board could not be read.";
+    });
+    stopBoard();
+    boardTimer = setInterval(() => {
+      const panel = document.querySelector('[data-panel="grafana"]');
+      if (!panel || panel.hidden) {
+        stopBoard();
+        return;
+      }
+      refreshBoard().catch(() => {});
+    }, 4000);
   }
 
   function refreshOps() {
@@ -270,9 +510,12 @@
     document.body.classList.add("mode-ops");
     document.body.classList.remove("mode-desk");
     refreshOps();
+    const current = document.querySelector(".ops-head .tab.on");
+    if (current && current.getAttribute("data-tab") === "grafana") loadGrafana();
   }
 
   function showDesk() {
+    stopBoard();
     opsStage.hidden = true;
     desk.hidden = false;
     openOps.hidden = false;
@@ -293,7 +536,8 @@
       document.querySelectorAll("[data-panel]").forEach((panel) => {
         panel.hidden = panel.getAttribute("data-panel") !== name;
       });
-      if (name === "grafana") refreshBoard();
+      if (name === "grafana") loadGrafana();
+      else stopBoard();
     });
   });
 
