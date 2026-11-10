@@ -10,9 +10,10 @@ import pickle
 
 import pandas as pd
 import xgboost as xgb
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
+UI_DIR = ROOT_DIR / "ui_dummy"
 model_path = ROOT_DIR / "models" / "model.bin"
 
 with open(model_path, "rb") as f_in:
@@ -54,6 +55,18 @@ def predict_single(customer_data):
 
 
 app = Flask("hotel-cancellation")
+
+
+@app.route("/", methods=["GET"])
+def desk():
+    # Desk UI: HoldRisk front page from ui_dummy.
+    return send_from_directory(UI_DIR, "index.html")
+
+
+@app.route("/ui/<path:asset>", methods=["GET"])
+def ui_assets(asset):
+    # CSS/JS next to index.html (same-origin with /predict).
+    return send_from_directory(UI_DIR, asset)
 
 
 @app.route("/health", methods=["GET"])

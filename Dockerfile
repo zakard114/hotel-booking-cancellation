@@ -28,6 +28,11 @@ COPY src/ ./src/
 # 목적(용도): 컨테이너에서 predict.py를 실행할 수 있게 한다.
 # 이 시점: deps 설치 후.
 
+COPY ui_dummy/ ./ui_dummy/
+# COPY ui_dummy/: HoldRisk desk + Ops static UI.
+# 목적(용도): Flask가 / 와 /ui/* 로 프론트를 같이 서빙하기 위함.
+# 이 시점: src 복사 직후.
+
 COPY models/ ./models/
 # COPY models/: model.bin 등 학습 아티팩트를 이미지에 넣는다.
 # 목적(용도): predict.py가 /app/models/model.bin 을 로드하게 한다.
