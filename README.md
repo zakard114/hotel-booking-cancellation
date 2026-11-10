@@ -4,20 +4,11 @@
 
 Built as a midterm project for [Machine Learning Zoomcamp 2026](https://github.com/DataTalksClub/machine-learning-zoomcamp).
 
-**Live app:** https://hotel-cancel-api.onrender.com  
-A push to `main` rebuilds that Render web service (Docker, free plan). There is no separate development URL.
-
-| | |
-|---|---|
-| Certificate name | Heeju Yang |
-| Deadline | 16–17 November 2026 (platform shows 16 Nov 2026) |
-| Dataset | [hotel-booking-demand](https://www.kaggle.com/datasets/jessemostipak/hotel-booking-demand) (Antonio, Almeida, and Nunes) |
-| Repo | https://github.com/zakard114/hotel-booking-cancellation |
+**Live app:** https://hotel-cancel-api.onrender.com
 
 ## Table of contents
 
 - [Problem](#problem)
-- [Status](#status)
 - [How to run](#how-to-run)
 - [Cloud deployment](#cloud-deployment)
 - [Architecture](#architecture)
@@ -34,27 +25,9 @@ Hotels take reservations that guests may cancel. A late cancel leaves an empty r
 
 The product is the **cancel-risk service**. It is not a booking website. A desk form sends the booking fields to `POST /predict`. The same process serves an in-app Ops board (request rate, latency, and the audit stream). That board is not a separate Grafana server.
 
-The target is binary `is_canceled` on the public hotel-booking-demand table. Training compares logistic regression, a random forest, and XGBoost on one seeded split, then exports the chosen pipeline to `src/train.py` and serves it from Docker.
+The target is binary `is_canceled` on [hotel-booking-demand](https://www.kaggle.com/datasets/jessemostipak/hotel-booking-demand) (Antonio, Almeida, and Nunes). Training compares logistic regression, a random forest, and XGBoost on one seeded split, then exports the chosen pipeline to `src/train.py` and serves it from Docker.
 
 Out of scope: car price, telco churn, credit risk, and clothing datasets.
-
-[↑ Contents](#table-of-contents)
-
----
-
-## Status
-
-Build gates **1–9 are done**. The public service is live.
-
-| | |
-|--|--|
-| Model | XGBoost, validation ROC-AUC about 0.95 |
-| Artifact | `models/model.bin` (DictVectorizer + booster) |
-| Local API | Flask on port 9696 |
-| Cloud | https://hotel-cancel-api.onrender.com |
-| Smoke (2026-11-10) | `cancel_probability≈0.6116`, `is_canceled=true` |
-
-Peer reviews are outside the build gates and stay at 0 until three reviews exist.
 
 [↑ Contents](#table-of-contents)
 
@@ -132,10 +105,10 @@ Deploy notes: [`deploy/README.md`](deploy/README.md). Blueprint: [`render.yaml`]
 ## Architecture
 
 1. `scripts/phase1_eda.py` and `notebooks/notebook.ipynb` load the table, record missing values and the target rate (~37% canceled), mark leakage columns, and split with seed 42. No model is fit there.
-2. `scripts/phase2_models.py` compares logistic regression, a random forest, and XGBoost on the same split. XGBoost wins on validation ROC-AUC.
-3. `src/train.py` refits that pipeline and writes `models/model.bin` as `(DictVectorizer, XGBoost)`.
-4. `src/predict.py` loads the artifact and serves the desk, `POST /predict`, and the in-app Ops board.
-5. `Dockerfile` runs that process. Render builds the same image from `main`.
+2. `scripts/phase2_models.py` compares logistic regression, a random forest, and XGBoost on the same split. XGBoost wins, with validation ROC-AUC about 0.95.
+3. `src/train.py` refits that pipeline and writes `models/model.bin` (DictVectorizer + booster).
+4. `src/predict.py` loads that file and serves the desk, `POST /predict`, and the in-app Ops board with Flask on port 9696.
+5. `Dockerfile` runs that process. The live service returned `cancel_probability≈0.6116`, `is_canceled=true` on 2026-11-10.
 
 Leakage columns left out of training: `reservation_status`, `reservation_status_date`.
 
@@ -164,13 +137,13 @@ _planning/       roadmap, checkpoints, phase notes
 
 ## Screenshots
 
-Desk after a live predict (City Hotel, lead time 50, no deposit, Online TA):
+Desk before a prediction:
 
-![HoldRisk desk showing a 61.2 percent cancel probability](docs/images/holdrisk-desk.png)
+![HoldRisk desk with the booking form and an empty cancel probability](docs/images/holdrisk-desk.png)
 
-Ops Grafana tab on the same host. Counts stay at zero until this process has handled requests:
+Ops Inspector on the same host, before any score:
 
-![HoldRisk Ops board with request, latency, and threshold cards](docs/images/holdrisk-ops.png)
+![HoldRisk Ops inspector on a dark panel, no prediction yet](docs/images/holdrisk-ops.png)
 
 [↑ Contents](#table-of-contents)
 
