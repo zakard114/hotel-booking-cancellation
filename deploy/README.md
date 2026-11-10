@@ -3,7 +3,10 @@
 에이전트 쪽 스캐폴드는 끝남. **클릭·계정·스모크는 학습자.**  
 전체 클릭 경로: [`../_planning/gemini_packets/phase_8_final_guide.md`](../_planning/gemini_packets/phase_8_final_guide.md).
 
-**게이트 doing.** `done` / Cloud Score는 학습자 명시 + Live 증거 후에만. 가짜 URL 금지.
+**게이트 doing.** `done`은 학습자 명시(「클라우드 끝」) 후에만. 가짜 URL 금지.
+
+**Live URL:** https://hotel-cancel-api.onrender.com  
+T4 smoke (2026-11-10): `POST /predict` → `cancel_probability≈0.611555278301239`, `is_canceled=True`.
 
 ## 전제 (에이전트 완료)
 
@@ -26,12 +29,12 @@
 8. PowerShell 스모크 (`YOUR-SERVICE`만 교체) — body는 `phase_8_final_guide.md`와 동일:
 
 ```powershell
-$base = "https://YOUR-SERVICE.onrender.com"
+$base = "https://hotel-cancel-api.onrender.com"
 Invoke-RestMethod -Method Post -Uri "$base/predict" `
   -ContentType "application/json" -Body $body
 ```
 
-9. README에 실 URL + 절차. Evidence 뒤에만 Cloud Score **1**(문서) 또는 **2**(Live/시연).
+9. README에 실 URL + 절차. Evidence 뒤에만 Cloud Score **1**(문서) 또는 **2**(Live/시연). 루트 README Evaluation은 Live 증거로 **2/2** (게이트 `done`과는 별개).
 
 ## 실패 로그 힌트
 

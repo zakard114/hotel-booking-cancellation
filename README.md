@@ -48,6 +48,43 @@ python src/predict.py
 docker build -t hotel-cancel . ; docker run --rm -p 9696:9696 hotel-cancel
 ```
 
+## Cloud / How to run cloud
+
+**Live URL:** https://hotel-cancel-api.onrender.com  
+(Free tier may cold-start 30–60s+ on the first request.)
+
+Health check: `GET /health` · Predict: `POST /predict`
+
+```powershell
+$base = "https://hotel-cancel-api.onrender.com"
+$body = @{
+  hotel = "City Hotel"; lead_time = 50
+  arrival_date_year = 2017; arrival_date_month = "July"
+  arrival_date_week_number = 27; arrival_date_day_of_month = 1
+  stays_in_weekend_nights = 1; stays_in_week_nights = 2
+  adults = 2; children = 0; babies = 0; meal = "BB"; country = "PRT"
+  market_segment = "Online TA"; distribution_channel = "TA/TO"
+  is_repeated_guest = 0; previous_cancellations = 0
+  previous_bookings_not_canceled = 0
+  reserved_room_type = "A"; assigned_room_type = "A"
+  booking_changes = 0; deposit_type = "No Deposit"
+  agent = "9"; company = "missing"; days_in_waiting_list = 0
+  customer_type = "Transient"; adr = 100.0
+  required_car_parking_spaces = 0; total_of_special_requests = 1
+} | ConvertTo-Json
+Invoke-RestMethod -Method Post -Uri "$base/predict" `
+  -ContentType "application/json" -Body $body
+```
+
+```bash
+curl -X POST "https://hotel-cancel-api.onrender.com/predict" \
+  -H "Content-Type: application/json" \
+  -d '{"hotel":"City Hotel","lead_time":50,"arrival_date_year":2017,"arrival_date_month":"July","arrival_date_week_number":27,"arrival_date_day_of_month":1,"stays_in_weekend_nights":1,"stays_in_week_nights":2,"adults":2,"children":0,"babies":0,"meal":"BB","country":"PRT","market_segment":"Online TA","distribution_channel":"TA/TO","is_repeated_guest":0,"previous_cancellations":0,"previous_bookings_not_canceled":0,"reserved_room_type":"A","assigned_room_type":"A","booking_changes":0,"deposit_type":"No Deposit","agent":"9","company":"missing","days_in_waiting_list":0,"customer_type":"Transient","adr":100.0,"required_car_parking_spaces":0,"total_of_special_requests":1}'
+```
+
+Sample smoke (2026-11-10): `cancel_probability≈0.611555278301239`, `is_canceled=True`.  
+Deploy notes: [`deploy/README.md`](deploy/README.md).
+
 ## Project layout
 
 ```text
@@ -80,8 +117,8 @@ Working copy (roadmap gates + phase checklists): [`_planning/CHECKPOINTS.md`](_p
 | 6 | Model deployment | 1 | 1 | Flask POST /predict; local JSON 1건 OK |
 | 7 | Dependency / environment | 2 | 2 | requirements.txt 5==pin + README install/activate (use_e_drive→venv→pip -r) |
 | 8 | Containerization | 2 | 2 | `docker build -t hotel-cancel .` + `docker run -p 9696:9696`; POST /predict OK |
-| 9 | Cloud deployment (bonus) | 2 | 0 | — |
-| — | **Subtotal** | **16** | **13** | |
+| 9 | Cloud deployment (bonus) | 2 | 2 | Live https://hotel-cancel-api.onrender.com — POST /predict → cancel_probability≈0.6116, is_canceled=True |
+| — | **Subtotal** | **16** | **15** | |
 | 10 | Peer reviews (extra) | 3 | 0 | after 3 peer reviews |
 
 Official criteria: [ML Zoomcamp projects README](https://github.com/DataTalksClub/machine-learning-zoomcamp/blob/main/projects/README.md).
