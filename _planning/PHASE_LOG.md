@@ -80,8 +80,8 @@
 
 ## Phase 8 — Cloud deployment (9/9, bonus)
 
-- **상태:** **doing** (열린 상태 · **미완료**)
-- **날짜:** 2026-11-09 (오픈)
-- **한 일:** Phase 8 패킷·Cursor 가이드·`render.yaml`/`deploy/README.md` 스캐폴드. Evaluation Cloud Score **0** 유지. 실배포·게이트 닫기 없음.
-- **다음:** 가이드대로 PORT → Render 배포 → URL/시연 → (학습자 닫기 요청 시) done. 이후 제출·Peer reviews.
+- **상태:** **done**
+- **날짜:** 2026-11-10 (닫기; 오픈 2026-11-09)
+- **한 일:** Render Live https://hotel-cancel-api.onrender.com. POST /predict → cancel_probability≈0.6116, is_canceled=true. README Cloud Evidence + Evaluation **2/2** · subtotal **15/16**. 학습자 「클라우드 끝」으로 게이트 9/9 닫음. Midterm build gates 1–9 완료.
+- **다음:** (선택) 제출 폼 repo URL + Commit ID · Certificate Heeju Yang · Peer reviews 3건 (빌드 게이트 밖).
 

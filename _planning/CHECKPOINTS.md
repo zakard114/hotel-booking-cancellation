@@ -22,11 +22,11 @@
 | Dependency and environment | 6/9 | deps·venv 고정 | **done** | deps 파일+README 설치/활성화 | 2026-11-08 requirements 5 pin + README How to run; predict :9696 OK |
 | Containerization | 7/9 | Docker 이미지·실행 | **done** | build+run으로 API 기동 | 2026-11-09 hotel-cancel build+run :9696; POST cancel_probability≈0.679 |
 | Reproducibility | 8/9 | 재현 점검·README 증거 | **done** | 남이 따라 할 수 있는 실행 경로 검증 (data 안내·시드·README·train/노트북) | 2026-11-09 README reproduce + train.py OK |
-| Cloud deployment (bonus) | 9/9 | 클라우드·제출 마감 | **doing** | (선택) URL/시연 + Commit ID 제출 준비 | — (배포·시연 후 Evidence) |
+| Cloud deployment (bonus) | 9/9 | 클라우드·제출 마감 | **done** | (선택) URL/시연 + Commit ID 제출 준비 | 2026-11-10 Live https://hotel-cancel-api.onrender.com — POST /predict → cancel_probability≈0.6116, is_canceled=true |
 
 Peer reviews = 제출 후(빌드 게이트 밖).
 
-**지금:** Cloud deployment (bonus) / **(9/9) doing**. Reproducibility (8/9) **done 유지**. 실배포·게이트 닫기는 학습자 명시 후.
+**지금:** Cloud deployment (bonus) / **(9/9) done**. Midterm build gates **1–9 전부 완료**. 다음은 제출·Peer reviews (빌드 게이트 밖).
 
 ---
 
@@ -45,8 +45,8 @@ Peer reviews = 제출 후(빌드 게이트 밖).
 | 6 | Model deployment | 1 | 1 | `src/predict.py` Flask POST /predict; 로컬 1건 성공 |
 | 7 | Dependency / environment | 2 | 2 | requirements.txt 5==pin + README use_e_drive→venv→pip install -r; pyproject deps 비움·install truth=requirements |
 | 8 | Containerization | 2 | 2 | `docker build -t hotel-cancel .` + run `-p 9696:9696`; POST /predict → cancel_probability≈0.679 |
-| 9 | Cloud deployment (bonus) | 2 | 0 | — |
-| — | **Subtotal (course)** | **16** | **13** | |
+| 9 | Cloud deployment (bonus) | 2 | 2 | Live https://hotel-cancel-api.onrender.com — POST /predict → cancel_probability≈0.6116, is_canceled=true (2026-11-10) |
+| — | **Subtotal (course)** | **16** | **15** | |
 | 10 | Peer reviews (extra) | 3 | 0 | 제출 후 동료 3건 |
 
 ---
@@ -81,14 +81,14 @@ Peer reviews = 제출 후(빌드 게이트 밖).
 - [x] Evaluation Reproducibility Score=1 + Evidence
 - [x] 클라우드 없음
 
-### Phase 8 (9/9, bonus) — doing
+### Phase 8 (9/9, bonus) — done
 
-- [ ] `PORT` env in `predict.py` (cloud-ready; local default 9696)
-- [ ] `render.yaml` + `deploy/README.md` 절차 확인
-- [ ] (선택) Render/동등 Live URL 또는 시연 스크린샷/영상
-- [ ] README Cloud 절 + Evaluation Score만 증거 있을 때 (현재 Score **0**)
+- [x] `PORT` env in `predict.py` (cloud-ready; local default 9696)
+- [x] `render.yaml` + `deploy/README.md` 절차 확인
+- [x] Live URL https://hotel-cancel-api.onrender.com — POST /predict → cancel_probability≈0.6116, is_canceled=true
+- [x] README Cloud 절 + Evaluation Cloud Score **2/2** (subtotal **15/16**)
 - [ ] (선택) 제출: repo URL + Commit ID · Heeju Yang
-- [ ] 게이트 `done`은 학습자가 닫기 요청할 때만
+- [x] 게이트 `done` — 학습자 「클라우드 끝」(2026-11-10)
 
 ---
 

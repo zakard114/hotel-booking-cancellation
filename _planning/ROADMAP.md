@@ -18,7 +18,7 @@ Model deployment               → (5/9) 예측 API            [done]
 Dependency and environment     → (6/9) deps·venv          [done]
 Containerization               → (7/9) Docker             [done]
 Reproducibility                → (8/9) 재현·README 증거   [done]
-Cloud deployment (bonus)       → (9/9) 클라우드·제출      ← 지금 doing (보너스)
+Cloud deployment (bonus)       → (9/9) 클라우드·제출      [done]
 Peer reviews                   → 제출 후
 ```
 
@@ -27,4 +27,4 @@ Peer reviews                   → 제출 후
 로그: [`PHASE_LOG.md`](PHASE_LOG.md)
 
 금지: car price, telco churn, credit risk, clothing.  
-클라우드는 (9/9) 보너스. 실배포·done은 학습자 명시 후.
+클라우드는 (9/9) 보너스 · **done** (2026-11-10 Live URL). Midterm build gates 1–9 완료.

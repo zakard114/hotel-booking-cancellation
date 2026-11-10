@@ -172,7 +172,7 @@
 
 ### 호텔 대입
 
-- **상태: doing** (2026-11-09 오픈). 가이드: `gemini_packets/phase_8_final_guide.md`. Score는 URL/시연 Evidence 전 0.
+- **상태: done** (2026-11-10). Live https://hotel-cancel-api.onrender.com — POST /predict → cancel_probability≈0.6116, is_canceled=true. Evaluation Cloud **2/2** · subtotal **15/16**. 가이드: `gemini_packets/phase_8_final_guide.md`.
 
 ---
 
@@ -187,7 +187,7 @@ Model deployment               → (5/9) 예측 API              [done]
 Dependency and environment     → (6/9) deps·venv            [done]
 Containerization               → (7/9) Docker               [done]
 Reproducibility                → (8/9) 재현·README 증거     [done]
-Cloud deployment (bonus)       → (9/9) 클라우드·제출        ← doing (보너스)
+Cloud deployment (bonus)       → (9/9) 클라우드·제출        [done]
 Peer reviews (extra)           → 제출 후
 ```
 

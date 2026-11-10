@@ -10,5 +10,5 @@
 - Render: https://render.com · https://dashboard.render.com
 - Blueprint: **New +** → **Blueprint** → `zakard114/hotel-booking-cancellation` → `main` → **Apply**
 - 성공: 초록 **Live** + 헤더 `.onrender.com`
-- Score/`done`: 증거 후 학습자 명시 때만. 가짜 URL 금지.
+- Score/`done`: **done** (2026-11-10 · 「클라우드 끝」). Live https://hotel-cancel-api.onrender.com.
 - Certificate: **Heeju Yang**

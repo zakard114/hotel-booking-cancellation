@@ -10,7 +10,7 @@
 
 **성공 기준:** 서비스 상태 **초록 Live** + 헤더 URL이 **`.onrender.com`**  
 **레포:** `zakard114/hotel-booking-cancellation` · https://github.com/zakard114/hotel-booking-cancellation  
-**게이트:** 지금도 **doing**. Score/`done`은 증거 생긴 뒤 학습자가 말할 때만.
+**게이트:** **done** (2026-11-10 · 학습자 「클라우드 끝」). Live https://hotel-cancel-api.onrender.com · Cloud Score **2/2**.
 
 ---
 

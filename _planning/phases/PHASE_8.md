@@ -29,7 +29,7 @@
 
 ### 성공 기준 (닫을 때)
 
-- [ ] 배포 문서에 단계·설정 파일이 있다 (→ 최소 1점 가능)
-- [ ] (만점) 배포 코드 + 공개 URL 또는 시연 증거
-- [ ] CHECKPOINTS (9/9) `done` + Evaluation Cloud Score/Evidence (사용자 닫기 요청 후)
-- [ ] 8/9 Reproducibility는 **done 유지**
+- [x] 배포 문서에 단계·설정 파일이 있다 (→ 최소 1점 가능)
+- [x] (만점) 배포 코드 + 공개 URL 또는 시연 증거 — https://hotel-cancel-api.onrender.com
+- [x] CHECKPOINTS (9/9) `done` + Evaluation Cloud Score **2/2** (사용자 「클라우드 끝」, 2026-11-10)
+- [x] 8/9 Reproducibility는 **done 유지**
